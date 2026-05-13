@@ -22,7 +22,7 @@ if __name__ == '__main__':
     n = 0
     isDirected = False
     with open('input.csv', 'r') as file:
-        isDirected = file.readline().strip()[1].lower() == 'yes'
+        isDirected = file.readline().strip().split(',')[1].lower() == 'yes'
         file.readline()
         for line in file.readlines():
             u, v, w = map(int, line.strip().split(','))

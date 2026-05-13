@@ -4,13 +4,18 @@ def floydWarshall(dists, n, prevs) -> None:
     for k in range(1, n + 1):
         for i in range(1, n + 1):
             for j in range(1, n + 1):
-                if dists[i][k] != INF and dists[k][j] != INF and dists[i][k] + dists[k][j] < dists[i][j]:
+                if dists[i][k] + dists[k][j] < dists[i][j]:
                     dists[i][j] = dists[i][k] + dists[k][j]
-                    # do something to store previous
+                    prevs[i][j] = prevs[k][j]
 
-def getPath(dists, prevs, u, v) -> list[int]:
-    # reconstruct path from u to v and return it as a list
-    return [1, 2, 3] # test
+def getPath(prevs, u, v) -> list[int]:
+    if prevs[u][v] is None:
+        return []
+    path = [v]
+    while u != v:
+        v = prevs[u][v]
+        path.append(v)
+    return path[::-1]
 
 if __name__ == '__main__':
     edgeList = []
@@ -28,22 +33,28 @@ if __name__ == '__main__':
     prevs = [[None for _ in range(n + 1)] for _ in range(n + 1)]
     for i in range(1, n + 1):
         dists[i][i] = 0
+        prevs[i][i] = i
     for u, v, w in edgeList:
         dists[u][v] = w
+        prevs[u][v] = u
         if not isDirected:
             dists[v][u] = w
+            prevs[v][u] = v
 
     floydWarshall(dists, n, prevs)
 
     with open('output.csv', 'w') as file:
-        file.write('from,to,shortest distance,path\n')
+        file.write('from,to,shortest distance,,path\n')
         for i in range(1, n + 1):
             for j in range(1, n + 1):
                 if dists[i][j] != INF:
-                    file.write(f'{i},{j},{dists[i][j]}')
-                    path = getPath(dists, prevs, i, j)
+                    file.write(f'{i},{j},{dists[i][j]},')
+                    path = getPath(prevs, i, j)
                     for node in path[:-1]:
                         file.write(f',{node} ->')
-                    file.write(f',{path[-1]}\n')
+                    if path:
+                        file.write(f',{path[-1]}\n')
+                    else:
+                        file.write('\n')
                 else:
-                    file.write(f'{i},{j},unreachable,---\n')
+                    file.write(f'{i},{j},unreachable\n')

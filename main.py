@@ -36,7 +36,7 @@ if __name__ == '__main__':
     floydWarshall(dists, n, prevs)
 
     with open('output.csv', 'w') as file:
-        file.write('from,to,distance,path\n')
+        file.write('from,to,shortest distance,path\n')
         for i in range(1, n + 1):
             for j in range(1, n + 1):
                 if dists[i][j] != INF:
